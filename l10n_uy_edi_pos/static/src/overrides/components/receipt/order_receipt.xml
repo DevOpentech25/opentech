@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="l10n_uy_edi_pos.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <!--xpath expr="//div[hasclass('pos-receipt')]" position="replace">
+            <div class="pos-receipt p-2">
+                <t t-if="props.data.uy_invoice">
+                    <div>
+                        <img width="100%" t-attf-src="{{props.data.uy_invoice}}"/>
+                    </div>
+                </t>
+                <t t-if="props.data.rounding_applied">
+                    <div class="pos-receipt-order-data mb-2 error">
+                        En Comprobante no pudo ser procesado
+                    </div>
+                </t>
+
+            </div>
+        </xpath-->
+        <!--xpath  expr="//div[hasclass('pos-receipt')]" position="attributes">
+            <attribute name="t-if" add="(!props.data.uy_company)" separator=" " />
+        </xpath-->
+        <xpath   expr="//ReceiptHeader" position="after">
+            <t t-if="props.data.uy_invoice and props.data.uy_company">
+                <img width="100%" t-attf-src="{{props.data.uy_invoice}}"/>
+            </t>
+            <t t-if="!props.data.uy_invoice and props.data.uy_company">
+                <div class="pos-receipt-order-data mb-2 error">
+                    En Comprobante no pudo ser procesado
+                </div>
+            </t>
+        </xpath>
+        <xpath  expr="//ReceiptHeader" position="attributes">
+            <attribute name="t-if" add="(!props.data.uy_company)" separator=" " />
+        </xpath>
+        <xpath  expr="//t[@t-value='scope.line']/.." position="attributes">
+            <attribute name="t-if" add="props.data.orderlines?.length and !props.data.uy_company" />
+        </xpath>
+        <xpath  expr="//t[@t-if='!props.basic_receipt']" position="attributes">
+            <attribute name="t-if" add="!props.basic_receipt and !props.data.uy_company" />
+        </xpath>
+        <xpath  expr="//div[hasclass('pos-receipt-center-align')]" position="attributes">
+            <attribute name="t-if" add="props.data.footer and !props.data.uy_company" />
+        </xpath>
+        <xpath  expr="//div[hasclass('after-footer')]" position="attributes">
+            <attribute name="t-if" add="!props.data.uy_company" />
+        </xpath>
+        <xpath  expr="//t[@t-if='props.data.shippingDate']" position="attributes">
+            <attribute name="t-if" add="props.data.shippingDate and !props.data.uy_company" />
+        </xpath>
+        <xpath  expr="//div[@t-esc='props.data.name']/.." position="attributes">
+            <attribute name="t-if" add="!props.data.uy_company" />
+        </xpath>
+    </t>
+</templates>
