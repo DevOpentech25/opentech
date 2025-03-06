@@ -1,0 +1,5 @@
+pdf2image==1.16.3
+
+requests~=2.32.3
+lxml~=5.3.1
+PySimpleSOAP~=1.16.2
