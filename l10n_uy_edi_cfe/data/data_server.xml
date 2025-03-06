@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tipos de Servidores -->
+        <record id="server_type_efactura" model="l10n_uy_cfe.server.type">
+            <field name="name">Efactura</field>
+        </record>
+
+        <record id="server_type_biller" model="l10n_uy_cfe.server.type">
+            <field name="name">Biller</field>
+        </record>
+
+        <record id="server_type_factura_express" model="l10n_uy_cfe.server.type">
+            <field name="name">Factura Express</field>
+        </record>
+
+        <record id="server_type_uruware" model="l10n_uy_cfe.server.type">
+            <field name="name">Uruware</field>
+        </record>
+
+        <!-- Ejemplo de Servidores con los Tipos -->
+        <record id="server_efactura" model="l10n_uy_cfe.server">
+            <field name="name">Servidor Efactura</field>
+            <field name="server_type_id" ref="server_type_efactura"/>
+            <field name="url_api_cfe">https://api.efactura.com</field>
+            <field name="token_api_cfe">TOKEN_EFACTURA</field>
+            <field name="usuario">admin_efactura</field>
+            <field name="clave">password_efactura</field>
+            <field name="codigo">EF01</field>
+        </record>
+
+        <record id="server_biller" model="l10n_uy_cfe.server">
+            <field name="name">Servidor Biller</field>
+            <field name="server_type_id" ref="server_type_biller"/>
+            <field name="url_api_cfe">https://api.biller.com</field>
+            <field name="token_api_cfe">TOKEN_BILLER</field>
+            <field name="usuario">admin_biller</field>
+            <field name="clave">password_biller</field>
+            <field name="codigo">BL01</field>
+        </record>
+
+        <!-- Factura Express -->
+        <record id="server_factura_express" model="l10n_uy_cfe.server">
+            <field name="name">Servidor Factura Express</field>
+            <field name="server_type_id" ref="server_type_factura_express"/>
+            <field name="url_api_cfe">https://api.facturaexpress.com</field>
+            <field name="token_api_cfe">TOKEN_FACTURA_EXPRESS</field>
+            <field name="usuario">admin_factura_express</field>
+            <field name="clave">password_factura_express</field>
+            <field name="codigo">FE01</field>
+        </record>
+
+        <!-- Uruware -->
+        <record id="server_uruware" model="l10n_uy_cfe.server">
+            <field name="name">Servidor Uruware</field>
+            <field name="server_type_id" ref="server_type_uruware"/>
+            <field name="url_api_cfe">https://api.uruware.com</field>
+            <field name="token_api_cfe">TOKEN_URUWARE</field>
+            <field name="usuario">admin_uruware</field>
+            <field name="clave">password_uruware</field>
+            <field name="codigo">UR01</field>
+        </record>
+
+    </data>
+</odoo>

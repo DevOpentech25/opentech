@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="document_type_e_ticket" model="document.type">
+            <field name="name">E-ticket</field>
+            <field name="code">ET</field>
+            <field name="description">Documento electrónico tipo ticket</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_factura" model="document.type">
+            <field name="name">E-factura</field>
+            <field name="code">EF</field>
+            <field name="description">Documento electrónico tipo factura</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_remision" model="document.type">
+            <field name="name">E-remisión</field>
+            <field name="code">ER</field>
+            <field name="description">Documento electrónico tipo remisión</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_liquidacion" model="document.type">
+            <field name="name">E-liquidación</field>
+            <field name="code">EL</field>
+            <field name="description">Documento electrónico tipo liquidación</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_ticket_contingencia" model="document.type">
+            <field name="name">E-ticket-contingencia</field>
+            <field name="code">ETC</field>
+            <field name="description">Documento electrónico tipo ticket en contingencia</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_factura_contingencia" model="document.type">
+            <field name="name">E-factura-contingencia</field>
+            <field name="code">EFC</field>
+            <field name="description">Documento electrónico tipo factura en contingencia</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_remision_contingencia" model="document.type">
+            <field name="name">E-remisión-contingencia</field>
+            <field name="code">ERC</field>
+            <field name="description">Documento electrónico tipo remisión en contingencia</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="document_type_e_liquidacion_contingencia" model="document.type">
+            <field name="name">E-liquidación-contingencia</field>
+            <field name="code">ELC</field>
+            <field name="description">Documento electrónico tipo liquidación en contingencia</field>
+            <field name="active">True</field>
+        </record>
+
+    </data>
+</odoo>

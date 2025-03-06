@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- CFE Server l10n_uy_cfe.server -->
+        <record id="l10n_uy_cfe_server_view_form" model="ir.ui.view">
+            <field name="name">l10n_uy_cfe_server_type_view_form</field>
+            <field name="model">l10n_uy_cfe.server</field>
+            <field name="arch" type="xml">
+                <form string="Proveedor Servicios CFE">
+                    <header>
+                        <button name="test_connection" string="Test Connection" type="object" class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="url_api_cfe"/>
+                                <field name="token_api_cfe"/>
+                                <field name="type_client_id"/>
+                            </group>
+                            <group>
+                                <field name="server_type_id"/>
+                                <field name="usuario"/>
+                                <field name="clave"/>
+                                <field name="codigo" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- CFE Server tree view -->
+        <record id="l10n_uy_cfe_server_view_tree" model="ir.ui.view">
+            <field name="name">l10n_uy_cfe_server_view_tree</field>
+            <field name="model">l10n_uy_cfe.server</field>
+            <field name="arch" type="xml">
+                <list string="CFE Server">
+                    <field name="name"/>
+                    <field name="url_api_cfe"/>
+                    <field name="token_api_cfe"/>
+                    <field name="server_type_id"/>
+                    <field name="usuario"/>
+                    <field name="clave"/>
+                    <field name="codigo"/>
+                </list>
+            </field>
+        </record>
+
+
+        <!-- action windows l10n_uy_cfe.server -->
+        <record id="l10n_uy_cfe_server_action_window" model="ir.actions.act_window">
+            <field name="name">CFE Server</field>
+            <field name="res_model">l10n_uy_cfe.server</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- menu l10n_uy_cfe -->
+        <menuitem id="l10n_uy_cfe_setting_menu"
+                  name="CFE Menu"
+                  parent="account.menu_finance_configuration"
+                  sequence="40"/>
+        <!--  l10n_uy_cfe.server -->
+        <menuitem id="l10n_uy_cfe_server_menu"
+                  name="CFE Server"
+                  parent="l10n_uy_cfe_setting_menu"
+                  sequence="10"
+                  action="l10n_uy_cfe_server_action_window"/>
+    </data>
+</odoo>
