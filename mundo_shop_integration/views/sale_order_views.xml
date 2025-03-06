@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="sale_order_form_mundo_shop_inherit" model="ir.ui.view">
+            <field name="name">sale_order_form_mundo_shop_inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook" position="inside">
+                    <!-- solo con propositos de desarrollo -->
+                    <page string="Mundo Shop">
+                        <group>
+                            <group string="Details Meli">
+                                <field name="created_by_meli"/>
+                                <field name="external_meli_id"/>
+                                <field name="send_invoice_meli"/>
+                            </group>
+                            <group string="Details Fenicio">
+                                <field name="created_by_fenicio"/>
+                                <field name="external_fenicio_id"/>
+                            </group>
+                        </group>
+
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
