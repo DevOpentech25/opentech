@@ -24,4 +24,3 @@ from . import cfe_server
 from . import einvoice_soap_client
 from . import invoice_express
 from . import invoice_express_client
-from . import cfe_api_client

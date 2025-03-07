@@ -24,9 +24,6 @@
             <field name="server_type_id" ref="server_type_efactura"/>
             <field name="url_api_cfe">https://api.efactura.com</field>
             <field name="token_api_cfe">TOKEN_EFACTURA</field>
-            <field name="usuario">admin_efactura</field>
-            <field name="clave">password_efactura</field>
-            <field name="codigo">EF01</field>
         </record>
 
         <record id="server_biller" model="l10n_uy_cfe.server">
@@ -34,9 +31,6 @@
             <field name="server_type_id" ref="server_type_biller"/>
             <field name="url_api_cfe">https://api.biller.com</field>
             <field name="token_api_cfe">TOKEN_BILLER</field>
-            <field name="usuario">admin_biller</field>
-            <field name="clave">password_biller</field>
-            <field name="codigo">BL01</field>
         </record>
 
         <!-- Factura Express -->
@@ -45,9 +39,6 @@
             <field name="server_type_id" ref="server_type_factura_express"/>
             <field name="url_api_cfe">https://api.facturaexpress.com</field>
             <field name="token_api_cfe">TOKEN_FACTURA_EXPRESS</field>
-            <field name="usuario">admin_factura_express</field>
-            <field name="clave">password_factura_express</field>
-            <field name="codigo">FE01</field>
         </record>
 
         <!-- Uruware -->
@@ -56,9 +47,6 @@
             <field name="server_type_id" ref="server_type_uruware"/>
             <field name="url_api_cfe">https://api.uruware.com</field>
             <field name="token_api_cfe">TOKEN_URUWARE</field>
-            <field name="usuario">admin_uruware</field>
-            <field name="clave">password_uruware</field>
-            <field name="codigo">UR01</field>
         </record>
 
     </data>

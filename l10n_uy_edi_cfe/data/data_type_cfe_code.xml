@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 🔹 Códigos CFE -->
+    <record id="cfe_code_101" model="type.cfe.code">
+        <field name="code">101</field>
+        <field name="name">e-ticket</field>
+    </record>
+
+    <record id="cfe_code_102" model="type.cfe.code">
+        <field name="code">102</field>
+        <field name="name">Nota Crédito de e-ticket</field>
+    </record>
+
+    <record id="cfe_code_103" model="type.cfe.code">
+        <field name="code">103</field>
+        <field name="name">Nota Débito de e-ticket</field>
+    </record>
+
+    <record id="cfe_code_111" model="type.cfe.code">
+        <field name="code">111</field>
+        <field name="name">e-factura</field>
+    </record>
+
+    <record id="cfe_code_112" model="type.cfe.code">
+        <field name="code">112</field>
+        <field name="name">Nota Crédito de e-factura</field>
+    </record>
+
+    <record id="cfe_code_113" model="type.cfe.code">
+        <field name="code">113</field>
+        <field name="name">Nota Débito de e-factura</field>
+    </record>
+
+    <record id="cfe_code_121" model="type.cfe.code">
+        <field name="code">121</field>
+        <field name="name">e-factura Exportación</field>
+    </record>
+
+    <record id="cfe_code_122" model="type.cfe.code">
+        <field name="code">122</field>
+        <field name="name">Nota Crédito e-factura Export</field>
+    </record>
+
+    <record id="cfe_code_123" model="type.cfe.code">
+        <field name="code">123</field>
+        <field name="name">Nota Débito e-factura Export</field>
+    </record>
+
+    <record id="cfe_code_124" model="type.cfe.code">
+        <field name="code">124</field>
+        <field name="name">e-remito Exportación</field>
+    </record>
+
+    <record id="cfe_code_131" model="type.cfe.code">
+        <field name="code">131</field>
+        <field name="name">e-Ticket Cuenta Ajena</field>
+    </record>
+
+    <record id="cfe_code_132" model="type.cfe.code">
+        <field name="code">132</field>
+        <field name="name">Nota Crédito e-ticket Cta Ajena</field>
+    </record>
+
+    <record id="cfe_code_133" model="type.cfe.code">
+        <field name="code">133</field>
+        <field name="name">Nota Débito e-ticket Cta Ajena</field>
+    </record>
+
+    <record id="cfe_code_141" model="type.cfe.code">
+        <field name="code">141</field>
+        <field name="name">e-factura Cuenta Ajena</field>
+    </record>
+
+    <record id="cfe_code_142" model="type.cfe.code">
+        <field name="code">142</field>
+        <field name="name">Nota Crédito E-factura Cta Ajena</field>
+    </record>
+
+    <record id="cfe_code_143" model="type.cfe.code">
+        <field name="code">143</field>
+        <field name="name">Nota Débito E-factura Cta Ajena</field>
+    </record>
+
+    <record id="cfe_code_151" model="type.cfe.code">
+        <field name="code">151</field>
+        <field name="name">e-Boleta de Entrada</field>
+    </record>
+
+    <record id="cfe_code_152" model="type.cfe.code">
+        <field name="code">152</field>
+        <field name="name">Nota de Crédito e-Boleta Ent.</field>
+    </record>
+
+    <record id="cfe_code_153" model="type.cfe.code">
+        <field name="code">153</field>
+        <field name="name">Nota de Débito e-Boleta Ent.</field>
+    </record>
+
+    <record id="cfe_code_181" model="type.cfe.code">
+        <field name="code">181</field>
+        <field name="name">e-remito</field>
+    </record>
+
+    <record id="cfe_code_182" model="type.cfe.code">
+        <field name="code">182</field>
+        <field name="name">e-resguardo</field>
+    </record>
+
+    <record id="cfe_code_201" model="type.cfe.code">
+        <field name="code">201</field>
+        <field name="name">e-ticket Contingencia</field>
+    </record>
+
+    <record id="cfe_code_202" model="type.cfe.code">
+        <field name="code">202</field>
+        <field name="name">Nota Crédito e-ticket Conting.</field>
+    </record>
+
+    <record id="cfe_code_203" model="type.cfe.code">
+        <field name="code">203</field>
+        <field name="name">Nota Débito e-ticket Conting.</field>
+    </record>
+
+    <record id="cfe_code_211" model="type.cfe.code">
+        <field name="code">211</field>
+        <field name="name">e-factura Contingencia</field>
+    </record>
+
+    <record id="cfe_code_212" model="type.cfe.code">
+        <field name="code">212</field>
+        <field name="name">Nota Crédito e-factura Conting.</field>
+    </record>
+
+    <record id="cfe_code_213" model="type.cfe.code">
+        <field name="code">213</field>
+        <field name="name">Nota Débito e-factura Conting.</field>
+    </record>
+
+    <record id="cfe_code_221" model="type.cfe.code">
+        <field name="code">221</field>
+        <field name="name">e-factura Exportación Conting.</field>
+    </record>
+
+    <record id="cfe_code_224" model="type.cfe.code">
+        <field name="code">224</field>
+        <field name="name">e-remito Exportación Conting.</field>
+    </record>
+
+    <record id="cfe_code_281" model="type.cfe.code">
+        <field name="code">281</field>
+        <field name="name">e-remito Contingencia</field>
+    </record>
+</odoo>

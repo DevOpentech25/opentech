@@ -10,6 +10,14 @@ from odoo import models, fields
 from odoo.exceptions import UserError
 
 
+class TypeCFECode(models.Model):
+    _name = "type.cfe.code"
+    _description = "CFE Codes for LPS"
+
+    code = fields.Char(string="Código", required=True)
+    name = fields.Char(string="Descripción", required=True)
+
+
 class CfeServerType(models.Model):
     _name = "l10n_uy_cfe.server.type"
     _description = "Tipos de Servidores CFE"
@@ -28,16 +36,13 @@ class CfeServer(models.Model):
         string="Tipo de Servidor",
         required=True
     )
-    url_api_cfe = fields.Char("URL API CFE", required=True)
-    token_api_cfe = fields.Char("Token API CFE", required=True)
-    usuario = fields.Char("Usuario", required=True)
-    clave = fields.Char("Clave", required=True)
-    codigo = fields.Char("Código", required=True)
-    active = fields.Boolean("Activo", default=True)
-    type_client_id = fields.Many2one('cfe.api.client', string='Tipo de Cliente', required=True)
+    url_api_cfe = fields.Char("URL Invoke CFE", required=False)
+    url_query_cfe = fields.Char("URL Query CFE", required=False)
+    token_api_cfe = fields.Char("Token API CFE", required=False)
+    user_ws = fields.Char("Usuario WS", required=False)
+    key_ws = fields.Char("Clave WS", required=False)
+    active = fields.Boolean("Activo", default=False)
 
     def test_connection(self):
-        if self.type_client_id:
-            return self.type_client_id.test_connection()
-        raise UserError("No se ha configurado el tipo de cliente")
+        return True
 

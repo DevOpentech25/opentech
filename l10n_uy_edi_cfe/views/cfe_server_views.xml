@@ -15,14 +15,13 @@
                             <group>
                                 <field name="name"/>
                                 <field name="url_api_cfe"/>
+                                <field name="url_query_cfe"/>
                                 <field name="token_api_cfe"/>
-                                <field name="type_client_id"/>
                             </group>
                             <group>
                                 <field name="server_type_id"/>
-                                <field name="usuario"/>
-                                <field name="clave"/>
-                                <field name="codigo" />
+                                <field name="user_ws"/>
+                                <field name="key_ws"/>
                             </group>
                         </group>
                     </sheet>
@@ -40,9 +39,6 @@
                     <field name="url_api_cfe"/>
                     <field name="token_api_cfe"/>
                     <field name="server_type_id"/>
-                    <field name="usuario"/>
-                    <field name="clave"/>
-                    <field name="codigo"/>
                 </list>
             </field>
         </record>
