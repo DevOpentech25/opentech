@@ -3,19 +3,19 @@
     <data>
         <!-- Tipos de Servidores -->
         <record id="server_type_efactura" model="l10n_uy_cfe.server.type">
-            <field name="name">Efactura</field>
+            <field name="name">efactura</field>
         </record>
 
         <record id="server_type_biller" model="l10n_uy_cfe.server.type">
-            <field name="name">Biller</field>
+            <field name="name">biller</field>
         </record>
 
         <record id="server_type_factura_express" model="l10n_uy_cfe.server.type">
-            <field name="name">Factura Express</field>
+            <field name="name">factura_express</field>
         </record>
 
         <record id="server_type_uruware" model="l10n_uy_cfe.server.type">
-            <field name="name">Uruware</field>
+            <field name="name">uruware</field>
         </record>
 
         <!-- Ejemplo de Servidores con los Tipos -->

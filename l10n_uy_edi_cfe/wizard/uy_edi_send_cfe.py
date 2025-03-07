@@ -336,6 +336,13 @@ class UySendCFE(models.AbstractModel):
                 documento["referencias"] = self._get_ref(batch_id.move_id)
             elif batch_id.move_id.uy_document_code != "182":
                 documento["referencias"] = self._get_ref(batch_id.move_id)
+        # cambiar los valores por los de la factura
+        if batch_id.move_id.company_id.uy_server.server_type_id.name.lower() == "uruware":
+            if "rutEmisor" in vals:
+                vals["rut_emisor"] = vals.pop("rutEmisor")
+            if "servidor" in vals:
+                vals.pop("servidor", None)
+
         Sobre = self.env["l10n_uy_edi_cfe.envelope.cfe"].create(vals)
         res = Sobre.enviarCFE()
         return res

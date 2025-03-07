@@ -32,7 +32,10 @@ class ResCompany(models.Model):
     uy_verification_url = fields.Char("Verification Url")
     uy_amount = fields.Float(string="Amount", digits=(16, 2), default=36300.00)
     uy_company_id = fields.Char("Company Id")
-    emisor_id = fields.Char(string="ID del Emisor")
+    emission_id_code = fields.Char(string="ID del Emisor")
+    cfe_code_terminal = fields.Char(string="Código de Terminal")
+    cfe_code_shop = fields.Char(string="Código de Comercio")
+    dgi_code = fields.Char(string="Código de casa DGI")
 
     @api.depends_context("uid")
     def _compute_server_cfe(self):
@@ -41,7 +44,7 @@ class ResCompany(models.Model):
             server_cfe_id = (
                 self.env["ir.config_parameter"]
                 .sudo()
-                .get_param("l10n_uy_edi_cfe.server_cfe_id", company_id=record.id)
+                .get_param("l10n_uy_edi_cfe.server_cfe_id")
             )
             record.uy_server = int(server_cfe_id) if server_cfe_id else False
 
@@ -51,7 +54,6 @@ class ResCompany(models.Model):
             self.env["ir.config_parameter"].sudo().set_param(
                 "l10n_uy_edi_cfe.server_cfe_id",
                 record.uy_server.id if record.uy_server else "",
-                company_id=record.id,
             )
 
     @api.model

@@ -334,85 +334,70 @@ class AccountEdiFormat(models.Model):
 
     def _check_move_configuration(self, move):
         self.ensure_one()
+
         if self.code != "edi_uy_cfe":
             return super(AccountEdiFormat, self)._check_move_configuration(move)
+
         res = []
         company_id = move.company_id.parent_id or move.company_id
-        if not company_id.uy_server:
-            res.append(_("The type of server is required"))
-        if not company_id.uy_server_url:
-            res.append(_("The server url is required"))
-        if company_id.uy_server in ["efactura"]:
-            if not company_id.uy_username:
-                res.append(_("The server username is required"))
-        if not company_id.uy_password:
-            res.append(_("The server password is required"))
-        if company_id.uy_server in ["biller"]:
-            if move.journal_id.uy_document_code not in [
-                "101",
-                "102",
-                "103",
-                "111",
-                "112",
-                "113",
-                "121",
-                "122",
-                "123",
-                "151",
-                "152",
-                "153",
-                "182",
-            ]:
-                res.append(
-                    "Documento no soportado, solo es posible emitir eFacturas, eTickets, Notas de Credito, Debito, e-Boleta, e-Boleta de Entrada y eResguardo"
-                )
-        if company_id.uy_server in ["efactura"]:
-            if move.journal_id.uy_document_code not in [
-                "101",
-                "102",
-                "103",
-                "111",
-                "112",
-                "113",
-                "121",
-                "122",
-                "123",
-                "182",
-            ]:
-                res.append(
-                    "Documento no soportado, solo es posible emitir eFacturas, eTickets, Notas de Credito, Debito, y eResguardo"
-                )
-        else:
-            if move.journal_id.uy_document_code not in [
-                "101",
-                "102",
-                "103",
-                "111",
-                "112",
-                "113",
-                "121",
-                "122",
-                "123",
-            ]:
-                res.append(
-                    "Documento no soportado, solo es posible emitir eFacturas, eTickets, Notas de Credito y Debito"
-                )
-        # if move.move_type in ['out_invoice'] and not move.journal_id.uy_document_code not in ['101', '103', '111', '113', '121', '123']:
-        #     res.append("Documento no soportado, solo es posible emitir eFacturas, eTickets, Notas de Debito")
-        # if move.move_type in ['out_refund'] and not move.journal_id.uy_document_code not in ['102', '112', '122']:
-        #     res.append("Documento no soportado, solo es posible emitir Notas de Credito")
 
+        # Validaciones básicas del servidor
+        required_fields = {
+            "uy_server": _("The type of server is required"),
+            "uy_server_url": _("The server url is required"),
+            "uy_password": _("The server password is required"),
+        }
+
+        for field, error_msg in required_fields.items():
+            if not getattr(company_id, field, None):
+                res.append(error_msg)
+
+        # Validación adicional para 'efactura'
+        if company_id.uy_server == "efactura" and not company_id.uy_username:
+            res.append(_("The server username is required"))
+
+        # Validar tipo de documento según el servidor
+        server_type = company_id.uy_server.server_type_id.name
+        self._validate_document_type(server_type, move.journal_id.uy_document_code, res)
+
+        # Validación del código de documento
         if move.uy_document_code != move.journal_id.uy_document_code:
-            res.append(
-                "El codigo de documento debe ser igual al codigo de documento del diario"
-            )
-        if move.uy_document_code in [
-            "121",
-            "122",
-            "123",
-        ] and move.invoice_line_ids.filtered(lambda s: s.uy_invoice_indicator != "10"):
-            res.append(
-                "Todos los items del comprobante deben tener el tipo de Indicador de Factura como 'Exportacion y Asimiladas cod: 10'"
-            )
+            raise ValidationError(_(f"The document {move.uy_document_code} must be the same as the journal document {move.journal_id.uy_document_code}"))
+            res.append(_("El código de documento debe ser igual al código de documento del diario"))
+
+        # Validación de Indicador de Factura para documentos de exportación
+        if move.uy_document_code in ["121", "122", "123"]:
+            if move.invoice_line_ids.filtered(lambda s: s.uy_invoice_indicator != "10"):
+                res.append(
+                    _("Todos los ítems del comprobante deben tener el tipo de Indicador de Factura como 'Exportación y Asimiladas cod: 10'"))
 
         return res
+
+    def _validate_document_type(self, server_type, document_code, res):
+        """
+        Valida si el código de documento es compatible con el tipo de servidor.
+        """
+        document_types = {
+            "biller": [
+                "101", "102", "103", "111", "112", "113",
+                "121", "122", "123", "151", "152", "153", "182"
+            ],
+            "efactura": [
+                "101", "102", "103", "111", "112", "113",
+                "121", "122", "123", "182"
+            ],
+            "default": [
+                "101", "102", "103", "111", "112", "113",
+                "121", "122", "123"
+            ],
+            "uruware": [
+                "101", "102", "103", "111", "112", "113", "121",
+                "122", "123"
+            ],
+        }
+        allowed_codes = document_types.get(server_type.lower(), document_types["default"])
+
+        if document_code not in allowed_codes:
+            res.append(_("Documento no soportado para este servidor"))
+
+

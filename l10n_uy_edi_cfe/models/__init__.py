@@ -25,3 +25,5 @@ from . import cfe_server
 from . import einvoice_soap_client
 from . import invoice_express
 from . import invoice_express_client
+from . import cfe_uruware
+from . import cfe_uruware_service
