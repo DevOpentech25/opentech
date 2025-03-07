@@ -16,7 +16,6 @@ access_document.retenciones.percepciones,document.retenciones.percepciones,model
 access_l10n_uy_cfe.sobre_factura,l10n_uy_cfe.sobre_factura,model_l10n_uy_cfe_sobre_factura,base.group_user,1,1,1,1
 access_l10n_uy_cfe.soap.client,l10n_uy_cfe.soap.client,model_l10n_uy_cfe_soap_client,base.group_user,1,1,1,1
 access_einvoice.express,einvoice.express,model_einvoice_express,base.group_user,1,1,1,1
-access_type_cfe_code,type.cfe.code,model_type_cfe_code,base.group_user,1,1,1,1
 access_einvoice.express.client.soap,einvoice.express.client.soap,model_einvoice_express_client_soap,base.group_user,1,1,1,1
 
 

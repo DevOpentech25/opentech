@@ -2,6 +2,7 @@ from odoo import models, fields, api
 import logging
 import requests
 from odoo.exceptions import ValidationError
+
 log = logging.getLogger(__name__)
 
 
@@ -49,7 +50,7 @@ class BillerClient(models.AbstractModel):
         return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
     def _make_request(
-            self, method, operation_type, token, params=None, json_data=None, timeout=30
+        self, method, operation_type, token, params=None, json_data=None, timeout=30
     ):
         """Realiza peticiones HTTP genéricas a la API."""
         headers = self._get_headers(token)
@@ -91,13 +92,13 @@ class BillerClient(models.AbstractModel):
         return self._make_request("GET", "obtener", token, params={"id": invoice_id})
 
     def check_invoice(
-            self,
-            token,
-            numero_interno=None,
-            desde=None,
-            tipo_comprobante=None,
-            serie=None,
-            numero=None,
+        self,
+        token,
+        numero_interno=None,
+        desde=None,
+        tipo_comprobante=None,
+        serie=None,
+        numero=None,
     ):
         """Verifica una factura basada en diferentes criterios."""
         params = {}

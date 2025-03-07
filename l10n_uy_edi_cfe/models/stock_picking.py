@@ -2,49 +2,103 @@ from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 import uuid
 
+
 class StockPicking(models.Model):
-    _inherit = 'stock.picking'
+    _inherit = "stock.picking"
 
     uy_eremito_date = fields.Date("E-Remito Date")
-    uy_edi_cfe_ids = fields.One2many('uy.stock.edi.document', 'picking_id', string="CFE Documents")
-    uy_uuid = fields.Char("Uuid Uruguayan", copy=False, default=lambda s: str(uuid.uuid4()))
+    uy_edi_cfe_ids = fields.One2many(
+        "uy.stock.edi.document", "picking_id", string="CFE Documents"
+    )
+    uy_uuid = fields.Char(
+        "Uuid Uruguayan", copy=False, default=lambda s: str(uuid.uuid4())
+    )
 
     # Edi Detail
-    uy_edi_name = fields.Char("CFE Name", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_cfe_serie = fields.Char("Serie", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_cfe_number = fields.Char("CFE Number", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_qr_id = fields.Many2one('ir.attachment', "Qr Code", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_security_code = fields.Char("Security Code", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_constancy = fields.Char("Constancy", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_constancy_serie = fields.Char("Constancy Serie", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_constancy_from = fields.Char("Constancy From", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_constancy_to = fields.Char("Constancy To", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_constancy_vto = fields.Char("Constancy Vto", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_url_code = fields.Char("Url Code", compute="_compute_uy_edi_detail", store=True, copy=False)
-    uy_attachment_id = fields.Many2one('ir.attachment', "Document", compute="_compute_uy_edi_detail", store=True,
-                                       copy=False)
+    uy_edi_name = fields.Char(
+        "CFE Name", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_cfe_serie = fields.Char(
+        "Serie", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_cfe_number = fields.Char(
+        "CFE Number", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_qr_id = fields.Many2one(
+        "ir.attachment",
+        "Qr Code",
+        compute="_compute_uy_edi_detail",
+        store=True,
+        copy=False,
+    )
+    uy_security_code = fields.Char(
+        "Security Code", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_constancy = fields.Char(
+        "Constancy", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_constancy_serie = fields.Char(
+        "Constancy Serie", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_constancy_from = fields.Char(
+        "Constancy From", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_constancy_to = fields.Char(
+        "Constancy To", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_constancy_vto = fields.Char(
+        "Constancy Vto", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_url_code = fields.Char(
+        "Url Code", compute="_compute_uy_edi_detail", store=True, copy=False
+    )
+    uy_attachment_id = fields.Many2one(
+        "ir.attachment",
+        "Document",
+        compute="_compute_uy_edi_detail",
+        store=True,
+        copy=False,
+    )
     uy_state = fields.Selection(
-        [('to_send', 'To Send'), ('sent', 'Sent'), ('to_cancel', 'To Cancel'), ('cancelled', 'Cancelled')], compute="_compute_uy_edi_detail", store=True,
-                                       copy=False)
-    uy_cfe_id = fields.Many2one('uy.stock.edi.document', "UY EDI", compute="_compute_uy_edi_detail", store=True,
-                                copy=False)
+        [
+            ("to_send", "To Send"),
+            ("sent", "Sent"),
+            ("to_cancel", "To Cancel"),
+            ("cancelled", "Cancelled"),
+        ],
+        compute="_compute_uy_edi_detail",
+        store=True,
+        copy=False,
+    )
+    uy_cfe_id = fields.Many2one(
+        "uy.stock.edi.document",
+        "UY EDI",
+        compute="_compute_uy_edi_detail",
+        store=True,
+        copy=False,
+    )
     uy_print = fields.Boolean("Uy Print", default=False)
 
-
     # type of transfer
-    uy_edi_cfe_type = fields.Selection([
-        ('1', 'Venta'),
-        ('2', 'Entre establecimientos de la misma empresa'),
-    ], string="CFE Type", compute='_compute_uy_edi_cfe_type', store=True, readonly=False)
+    uy_edi_cfe_type = fields.Selection(
+        [
+            ("1", "Venta"),
+            ("2", "Entre establecimientos de la misma empresa"),
+        ],
+        string="CFE Type",
+        compute="_compute_uy_edi_cfe_type",
+        store=True,
+        readonly=False,
+    )
 
-    @api.depends('picking_type_id')
+    @api.depends("picking_type_id")
     def _compute_uy_edi_cfe_type(self):
         for picking in self:
             picking.uy_edi_cfe_type = picking.picking_type_id.uy_edi_cfe_type
 
     def validade_edi_cfe(self):
         for picking in self:
-            if picking.company_id.uy_server != 'biller':
+            if picking.company_id.uy_server != "biller":
                 raise UserError(_("Please configure the server Biller"))
             if not picking.partner_id:
                 raise UserError(_("Please fill the partner"))
@@ -65,29 +119,37 @@ class StockPicking(models.Model):
         self.ensure_one()
         self.validade_edi_cfe()
         self.uy_eremito_date = fields.Date.context_today(self)
-        edi_document_id = self.env['uy.stock.edi.document'].create({
-            'picking_id': self.id,
-            # 'name': self.uy_edi_name,
-            'edi_format_id': self.env.ref('l10n_uy_edi_cfe.edi_uy_cfe').id,
-        })
+        edi_document_id = self.env["uy.stock.edi.document"].create(
+            {
+                "picking_id": self.id,
+                # 'name': self.uy_edi_name,
+                "edi_format_id": self.env.ref("l10n_uy_edi_cfe.edi_uy_cfe").id,
+            }
+        )
         edi_document_id.action_sent()
 
-    @api.depends('uy_edi_cfe_ids.uy_cfe_serie',
-                 'uy_edi_cfe_ids.uy_cfe_number',
-                 'uy_edi_cfe_ids.uy_qr_id',
-                 'uy_edi_cfe_ids.uy_security_code',
-                 'uy_edi_cfe_ids.uy_constancy',
-                 'uy_edi_cfe_ids.uy_constancy_serie',
-                 'uy_edi_cfe_ids.uy_constancy_from',
-                 'uy_edi_cfe_ids.uy_constancy_to',
-                 'uy_edi_cfe_ids.uy_constancy_vto',
-                 'uy_edi_cfe_ids.uy_url_code',
-                 'uy_edi_cfe_ids.attachment_id',
-                 'uy_edi_cfe_ids.state')
+    @api.depends(
+        "uy_edi_cfe_ids.uy_cfe_serie",
+        "uy_edi_cfe_ids.uy_cfe_number",
+        "uy_edi_cfe_ids.uy_qr_id",
+        "uy_edi_cfe_ids.uy_security_code",
+        "uy_edi_cfe_ids.uy_constancy",
+        "uy_edi_cfe_ids.uy_constancy_serie",
+        "uy_edi_cfe_ids.uy_constancy_from",
+        "uy_edi_cfe_ids.uy_constancy_to",
+        "uy_edi_cfe_ids.uy_constancy_vto",
+        "uy_edi_cfe_ids.uy_url_code",
+        "uy_edi_cfe_ids.attachment_id",
+        "uy_edi_cfe_ids.state",
+    )
     def _compute_uy_edi_detail(self):
         for picking in self:
-            uy_edi_cfe_ids = picking.uy_edi_cfe_ids.filtered(lambda s: s.edi_format_id.code == 'edi_uy_cfe')
-            edi_document_id = len(uy_edi_cfe_ids) > 1 and uy_edi_cfe_ids[0] or uy_edi_cfe_ids
+            uy_edi_cfe_ids = picking.uy_edi_cfe_ids.filtered(
+                lambda s: s.edi_format_id.code == "edi_uy_cfe"
+            )
+            edi_document_id = (
+                len(uy_edi_cfe_ids) > 1 and uy_edi_cfe_ids[0] or uy_edi_cfe_ids
+            )
             picking.uy_cfe_serie = edi_document_id.uy_cfe_serie
             picking.uy_cfe_number = edi_document_id.uy_cfe_number
             picking.uy_qr_id = edi_document_id.uy_qr_id
@@ -102,6 +164,9 @@ class StockPicking(models.Model):
             picking.uy_state = edi_document_id.state
             picking.uy_cfe_id = edi_document_id.id
             if edi_document_id.uy_cfe_serie and edi_document_id.uy_cfe_number:
-                picking.uy_edi_name = "%s-%s" % (edi_document_id.uy_cfe_serie, edi_document_id.uy_cfe_number)
+                picking.uy_edi_name = "%s-%s" % (
+                    edi_document_id.uy_cfe_serie,
+                    edi_document_id.uy_cfe_number,
+                )
             else:
                 picking.uy_edi_name = False

@@ -9,7 +9,10 @@
                 <block title="Electronic Invoice Provider" id="analytic">
                     <setting string="CFE" company_dependent="1" >
                         <div class="mt8">
-                            <button name="action_cfe_config_wizard" icon="fa-arrow-right" type="object" string="Configure Wizard" class="btn-link"/>
+                            <label for="server_cfe_id">Provider</label>
+                            <div>
+                                <field name="server_cfe_id" class="o_input" placeholder="Provider"/>
+                            </div>
                         </div>
                     </setting>
                 </block>

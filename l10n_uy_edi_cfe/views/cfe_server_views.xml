@@ -22,6 +22,7 @@
                                 <field name="server_type_id"/>
                                 <field name="user_ws"/>
                                 <field name="key_ws"/>
+                                <field name="company_id"/>
                             </group>
                         </group>
                     </sheet>
@@ -39,6 +40,7 @@
                     <field name="url_api_cfe"/>
                     <field name="token_api_cfe"/>
                     <field name="server_type_id"/>
+                    <field name="company_id"/>
                 </list>
             </field>
         </record>

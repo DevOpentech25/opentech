@@ -2,23 +2,22 @@
 from odoo import models, fields, api
 
 
-class CfeDocument(models.Model): # class Documento
+class CfeDocument(models.Model):  # class Documento
     _name = "cfe.document"
     _description = "Documento Base"
 
     servidor = fields.Char(string="Servidor")
-    emisor_id = fields.Many2one('res.partner', string="Emisor")
-    adquirente_id = fields.Many2one('res.partner', string="Adquirente")
+    emisor_id = fields.Many2one("res.partner", string="Emisor")
+    adquirente_id = fields.Many2one("res.partner", string="Adquirente")
 
     moneda = fields.Char(string="Moneda")
     tasa_cambio = fields.Float(string="Tasa de Cambio")
 
     montos_brutos = fields.Float(string="Montos Brutos")
 
-    forma_pago = fields.Selection([
-        ('contado', 'Contado'),
-        ('credito', 'Crédito')
-    ], string="Forma de Pago")
+    forma_pago = fields.Selection(
+        [("contado", "Contado"), ("credito", "Crédito")], string="Forma de Pago"
+    )
 
     tipo_cfe = fields.Char(string="Tipo CFE")
     serie = fields.Char(string="Serie")
@@ -33,14 +32,23 @@ class CfeDocument(models.Model): # class Documento
 
     adenda = fields.Text(string="Adenda")
 
-    items_ids = fields.One2many('document.items', 'documento_id', string="Ítems")
-    retenciones_percepciones_ids = fields.One2many('document.retenciones.percepciones', 'documento_id',
-                                                   string="Retenciones/Percepciones")
-    descuentos_ids = fields.One2many('document.discount', 'documento_id', string="Descuentos")
+    items_ids = fields.One2many("document.items", "documento_id", string="Ítems")
+    retenciones_percepciones_ids = fields.One2many(
+        "document.retenciones.percepciones",
+        "documento_id",
+        string="Retenciones/Percepciones",
+    )
+    descuentos_ids = fields.One2many(
+        "document.discount", "documento_id", string="Descuentos"
+    )
 
     mnt_no_grv = fields.Float(string="Monto No Gravado", digits=(12, 2))
-    mnt_neto_iva_tasa_min = fields.Float(string="Monto Neto IVA Tasa Mínima", digits=(12, 2))
-    mnt_neto_iva_tasa_basica = fields.Float(string="Monto Neto IVA Tasa Básica", digits=(12, 2))
+    mnt_neto_iva_tasa_min = fields.Float(
+        string="Monto Neto IVA Tasa Mínima", digits=(12, 2)
+    )
+    mnt_neto_iva_tasa_basica = fields.Float(
+        string="Monto Neto IVA Tasa Básica", digits=(12, 2)
+    )
 
     iva_tasa_min = fields.Float(string="IVA Tasa Mínima", digits=(12, 2))
     iva_tasa_basica = fields.Float(string="IVA Tasa Básica", digits=(12, 2))
@@ -55,7 +63,9 @@ class CfeDocument(models.Model): # class Documento
     mnt_pagar = fields.Float(string="Monto a Pagar", digits=(12, 2))
 
     referencia_global = fields.Char(string="Referencia Global")
-    referencias_ids = fields.One2many('document.referencia', 'documento_id', string="Referencias")
+    referencias_ids = fields.One2many(
+        "document.referencia", "documento_id", string="Referencias"
+    )
 
     tipo_traslado = fields.Char(string="Tipo Traslado")
     numero_interno = fields.Char(string="Número Interno")
@@ -66,7 +76,7 @@ class DocumentReferencia(models.Model):
     _name = "document.referencia"
     _description = "Referencias del Documento"
 
-    documento_id = fields.Many2one('cfe.document', string="Documento")
+    documento_id = fields.Many2one("cfe.document", string="Documento")
     motivo = fields.Char(string="Motivo")
     tipo_doc_ref = fields.Char(string="Tipo Documento Referenciado")
     serie = fields.Char(string="Serie")
@@ -78,7 +88,7 @@ class DocumentItems(models.Model):
     _name = "document.items"
     _description = "Ítems del Documento"
 
-    documento_id = fields.Many2one('cfe.document', string="Documento")
+    documento_id = fields.Many2one("cfe.document", string="Documento")
 
     indicador_facturacion = fields.Char(string="Indicador Facturación")
     descripcion = fields.Char(string="Descripción")
@@ -100,7 +110,7 @@ class DocumentRetencionesPercepciones(models.Model):
     _name = "document.retenciones.percepciones"
     _description = "Retenciones y Percepciones del Documento"
 
-    documento_id = fields.Many2one('cfe.document', string="Documento")
+    documento_id = fields.Many2one("cfe.document", string="Documento")
     codigo = fields.Char(string="Código")
     tasa = fields.Float(string="Tasa", digits=(12, 2))
     base = fields.Float(string="Base", digits=(12, 2))
@@ -112,7 +122,7 @@ class DocumentDiscount(models.Model):
     _name = "document.discount"
     _description = "Descuento del Documento"
 
-    documento_id = fields.Many2one('cfe.document', string="Documento")
+    documento_id = fields.Many2one("cfe.document", string="Documento")
     descripcion = fields.Char(string="Descripción")
     monto = fields.Float(string="Monto", digits=(12, 2))
     indicador_facturacion = fields.Char(string="Indicador Facturación")

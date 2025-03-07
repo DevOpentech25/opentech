@@ -10,14 +10,6 @@ from odoo import models, fields
 from odoo.exceptions import UserError
 
 
-class TypeCFECode(models.Model):
-    _name = "type.cfe.code"
-    _description = "CFE Codes for LPS"
-
-    code = fields.Char(string="Código", required=True)
-    name = fields.Char(string="Descripción", required=True)
-
-
 class CfeServerType(models.Model):
     _name = "l10n_uy_cfe.server.type"
     _description = "Tipos de Servidores CFE"
@@ -32,17 +24,20 @@ class CfeServer(models.Model):
 
     name = fields.Char("Nombre", required=True)
     server_type_id = fields.Many2one(
-        "l10n_uy_cfe.server.type",
-        string="Tipo de Servidor",
-        required=True
+        "l10n_uy_cfe.server.type", string="Tipo de Servidor", required=True
+    )
+    company_id = fields.Many2one(
+        "res.company",
+        string="Compañía",
+        required=True,
+        default=lambda self: self.env.company,
     )
     url_api_cfe = fields.Char("URL Invoke CFE", required=False)
     url_query_cfe = fields.Char("URL Query CFE", required=False)
     token_api_cfe = fields.Char("Token API CFE", required=False)
     user_ws = fields.Char("Usuario WS", required=False)
     key_ws = fields.Char("Clave WS", required=False)
-    active = fields.Boolean("Activo", default=False)
+    active = fields.Boolean("Activo", default=True)
 
     def test_connection(self):
         return True
-

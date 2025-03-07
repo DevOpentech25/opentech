@@ -1,6 +1,7 @@
 import requests
 import json
 from odoo import models, fields
+
 CREDENCIALES_BASE64 = "219507810019:ItSTSB5id4KYHPFYp82ruw=="
 
 
@@ -12,14 +13,14 @@ class UCFEService(models.Model):
         url = "https://test.ucfe.com.uy/inbox115_2/CfeService.svc/rest/Invoke"
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Basic {CREDENCIALES_BASE64}"
+            "Authorization": f"Basic {CREDENCIALES_BASE64}",
         }
         payload = {
             "CodComercio": "XXXX",
             "CodTerminal": "YYYY",
             "Req": cfe_data,
             "RequestDate": fields.Datetime.now(),
-            "Tout": 30000
+            "Tout": 30000,
         }
 
         response = requests.post(url, data=json.dumps(payload), headers=headers)
@@ -33,20 +34,17 @@ class UCFEService(models.Model):
         url = f"https://[SERVIDOR_UCFE]/CfeService.svc/rest/Invoke"
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "Basic [CREDENCIALES_BASE64]"
+            "Authorization": "Basic [CREDENCIALES_BASE64]",
         }
         payload = {
             "CodComercio": "XXXX",
             "CodTerminal": "YYYY",
-            "Req": {
-                "TipoMensaje": "650",
-                "NumeroCfe": numero_cfe,
-                "Serie": serie
-            },
+            "Req": {"TipoMensaje": "650", "NumeroCfe": numero_cfe, "Serie": serie},
             "RequestDate": fields.Datetime.now(),
-            "Tout": 30000
+            "Tout": 30000,
         }
 
         response = requests.post(url, data=json.dumps(payload), headers=headers)
-        return response.json() if response.status_code == 200 else {"error": response.text}
-
+        return (
+            response.json() if response.status_code == 200 else {"error": response.text}
+        )
