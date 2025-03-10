@@ -32,7 +32,7 @@ class ResCompany(models.Model):
     uy_verification_url = fields.Char("Verification Url")
     uy_amount = fields.Float(string="Amount", digits=(16, 2), default=36300.00)
     uy_company_id = fields.Char("Company Id")
-    emission_id_code = fields.Char(string="ID del Emisor")
+    emission_id_code = fields.Char(string="UUID del Emisor") # UUID del emisor
     cfe_code_terminal = fields.Char(string="Código de Terminal")
     cfe_code_shop = fields.Char(string="Código de Comercio")
     dgi_code = fields.Char(string="Código de casa DGI")

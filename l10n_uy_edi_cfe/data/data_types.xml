@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="document_type_e_ticket" model="document.type">
             <field name="name">E-ticket</field>
             <field name="code">ET</field>

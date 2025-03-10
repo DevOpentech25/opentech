@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from odoo import api, fields, models, _
+from lxml import etree
 
 
 class UySendCFE(models.AbstractModel):
@@ -342,10 +343,135 @@ class UySendCFE(models.AbstractModel):
                 vals["rut_emisor"] = vals.pop("rutEmisor")
             if "servidor" in vals:
                 vals.pop("servidor", None)
+            vals["documento"] = self.get_uruware_cfe_xml(batch_id.move_id.id)
+            vals["uuid_sobre"] = batch_id.move_id.uy_uuid # UUID de la factura
+            vals["invoice_id"] = batch_id.move_id.id
 
+        # model cfe_envelope.py -> l10n_uy_edi_cfe.envelope.cfe
         Sobre = self.env["l10n_uy_edi_cfe.envelope.cfe"].create(vals)
-        res = Sobre.enviarCFE()
+        res = Sobre.enviarCFE() # llama a la funcion de enviarCFE enviando la factura
         return res
+
+    def get_uruware_cfe_xml(self, account_id):
+        # Buscar la factura en Odoo
+        invoice = self.env['account.move'].browse(account_id)
+        company = self.env.company
+
+        if not invoice:
+            raise UserError("No se encontró documento para ese ID")
+
+        # Datos generales de la factura
+        tipo_cfe = invoice.uy_document_code,   # "111"  Tipo de CFE (puedes mapear según el tipo de factura)
+        serie = invoice.uy_cfe_serie  # Serie de la factura (puedes definirlo según la configuración)
+        nro = invoice.uy_cfe_number
+        fecha_emision = invoice.invoice_date.strftime("%Y-%m-%d") if invoice.invoice_date else fields.Date.today()
+        fma_pago = "1"  # Puedes mapear según los términos de pago
+
+        # Datos del Emisor (Tienda)
+        ruc_emisor = company.vat if company.vat else False  # RUC de la tienda
+        rzn_soc = company.name if company.name else "Razon Social"  # Razón social de la tienda
+        cdg_dgi_sucur = company.dgi_code  # Código DGI de la sucursal
+        dom_fiscal = company.street  # Domicilio fiscal de la tienda
+        ciudad = company.city  # Ciudad de la tienda
+        departamento = company.state_id.name  # Departamento de la tienda
+
+        # Datos del Cliente (Receptor)
+        cliente = invoice.partner_id
+        tipo_doc_recep = "2"  # 2 = RUT (puedes mapearlo según el tipo de cliente)
+        cod_pais_recep = cliente.country_id.code  # Código del país del cliente
+        doc_recep = cliente.vat  # RUT del cliente
+        rzn_soc_recep = cliente.name # razon social del cliente
+        dir_recep = cliente.street
+        ciudad_recep = cliente.city
+        pais_recep = cliente.country_id.name
+
+        # Totales
+        tpo_moneda = invoice.currency_id.name # Moneda de la factura
+        mnt_neto_iva_tasa_basica = invoice.amount_untaxed
+        iva_tasa_min = invoice.uy_tax_min
+        iva_tasa_basica = invoice.uy_tax_basic_base
+        mnt_iva_tasa_basica = invoice.uy_tax_min_base
+        mnt_total = invoice.amount_total
+        cant_lin_det = len(invoice.invoice_line_ids)
+        mnt_pagar = invoice.amount_total
+
+        # Detalles de los productos
+        detalles_xml = ""
+        for idx, line in enumerate(invoice.invoice_line_ids, start=1):
+            detalles_xml += f"""
+            <Item>
+                <NroLinDet>{idx}</NroLinDet>
+                <CodItem><TpoCod>INT2</TpoCod><Cod>{line.product_id.default_code or '000'}</Cod></CodItem>
+                <IndFact>3</IndFact>
+                <NomItem>{line.name}</NomItem>
+                <Cantidad>{line.quantity}</Cantidad>
+                <UniMed>{line.product_uom_id.name if line.product_uom_id else 'Unidad'}</UniMed>
+                <PrecioUnitario>{line.price_unit}</PrecioUnitario>
+                <MontoItem>{line.price_subtotal}</MontoItem>
+            </Item>
+            """
+
+        # Construcción del XML
+        cfe_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+        <CFE xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xmlns="http://cfe.dgi.gub.uy">
+            <eFact>
+                <Encabezado>
+                    <IdDoc>
+                        <TipoCFE>{tipo_cfe}</TipoCFE>
+                        <Serie>{serie}</Serie>
+                        <Nro>{nro}</Nro>
+                        <NroInterno>{invoice.id}</NroInterno>
+                        <FchEmis>{fecha_emision}</FchEmis>
+                        <FmaPago>{fma_pago}</FmaPago>
+                    </IdDoc>
+                    <Emisor>
+                        <RUCEmisor>{ruc_emisor}</RUCEmisor>
+                        <RznSoc>{rzn_soc}</RznSoc>
+                        <CdgDGISucur>{cdg_dgi_sucur}</CdgDGISucur>
+                        <DomFiscal>{dom_fiscal}</DomFiscal>
+                        <Ciudad>{ciudad}</Ciudad>
+                        <Departamento>{departamento}</Departamento>
+                    </Emisor>
+                    <Receptor>
+                        <TipoDocRecep>{tipo_doc_recep}</TipoDocRecep>
+                        <CodPaisRecep>{cod_pais_recep}</CodPaisRecep>
+                        <DocRecep>{doc_recep}</DocRecep>
+                        <RznSocRecep>{rzn_soc_recep}</RznSocRecep>
+                        <DirRecep>{dir_recep}</DirRecep>
+                        <CiudadRecep>{ciudad_recep}</CiudadRecep>
+                        <PaisRecep>{pais_recep}</PaisRecep>
+                    </Receptor>
+                    <Totales>
+                        <TpoMoneda>{tpo_moneda}</TpoMoneda>
+                        <MntNetoIVATasaBasica>{mnt_neto_iva_tasa_basica:.2f}</MntNetoIVATasaBasica>
+                        <IVATasaMin>{iva_tasa_min}</IVATasaMin>
+                        <IVATasaBasica>{iva_tasa_basica}</IVATasaBasica>
+                        <MntIVATasaBasica>{mnt_iva_tasa_basica:.2f}</MntIVATasaBasica>
+                        <MntTotal>{mnt_total:.2f}</MntTotal>
+                        <CantLinDet>{cant_lin_det}</CantLinDet>
+                        <MntPagar>{mnt_pagar:.2f}</MntPagar>
+                    </Totales>
+                </Encabezado>
+                <Detalle>
+                    {detalles_xml}
+                </Detalle>
+                <CAEData>
+                    <CAE_ID>90250001110</CAE_ID>
+                    <DNro>1</DNro>
+                    <HNro>9999999</HNro>
+                    <FecVenc>2026-12-31</FecVenc>
+                </CAEData>
+            </eFact>
+        </CFE>
+        """
+
+        # Validar formato XML
+        try:
+            etree.fromstring(cfe_xml.encode("utf-8"))  # Verifica si el XML es válido
+        except etree.XMLSyntaxError as e:
+            raise ValueError(f"Error en la generación del XML: {e}")
+
+        return cfe_xml
 
     def get_cfe_pdf(self, move, batch_id=False):
         if not batch_id:

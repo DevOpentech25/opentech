@@ -32,11 +32,15 @@ class UCFEService(models.Model):
             record.server_settings = server or False  # Evita asignar None
 
     def get_headers(self):
-        credentials = f"{self.user_ws}:{self.key_ws}"
+        setting = self.env["ir.config_parameter"].sudo().get_param("l10n_uy_edi_cfe.server_cfe_id")
+        server = self.env["l10n_uy_cfe.server"].browse(int(setting))
+
+        credentials = f"{server.user_ws}:{server.key_ws}"
         auth_header = base64.b64encode(credentials.encode()).decode()
         return {
             "Authorization": f"Basic {auth_header}",
             "Content-Type": "application/json",
+            "Accept": "application/json",
         }
 
     def get_url_server(self):
@@ -47,20 +51,48 @@ class UCFEService(models.Model):
         server = self.env["l10n_uy_cfe.server"].browse(int(setting)) if setting else False
         return server.url_api_cfe if server else False
 
-    def send_cfe_document(self, cfe_data):
+    def send_cfe_document(self, cfe_xml,invoice_id):
         url = self.get_url_server()+"/Invoke"
         headers = self.get_headers()
         cod_shop = self.env.company.cfe_code_shop
         cod_terminal = self.env.company.cfe_code_terminal
+        #uuid = self.env.company.emission_id_code
+        rut_company = self.env.company.vat
+        invoice = self.env["account.move"].browse(invoice_id)
+
+        # Construcción del JSON
         payload = {
-            "CodComercio":cod_shop,
+            "HMAC": "valor-hmac",
+            "Req": {
+                "Adenda": "",
+                "CfeXmlOTexto": cfe_xml,
+                "CifrarComplementoFiscal": "false",
+                "CodComercio": cod_shop,
+                "CodRta": 30,
+                "CodTerminal": cod_terminal,
+                "DatosQr": "",
+                "EmailEnvioPdfReceptor": invoice.partner_id.email,
+                "FechaReq": fields.Date.today().strftime("%Y-%m-%d"),
+                "HoraReq": fields.Datetime.now().strftime("%H:%M:%S"),
+                "IdReq": invoice.uy_cfe_id.name,
+                "Impresora": "",
+                "NumeroCfe": invoice.uy_cfe_number,
+                "RechCom": "No",
+                "RutEmisor": rut_company,
+                "Serie": invoice.uy_cfe_serie,
+                "TipoCfe": invoice.uy_document_code,
+                "TipoMensaje": 310,  # Invoke con JSON y xml_data
+                "TipoNotificacion": "",
+                "Uuid": invoice.uy_uuid,
+            },
+            "RequestDate": fields.Date.today().strftime("%Y-%m-%d"), # "2025-03-09T12:30:00",
+            "Tout": 2147483647,
+            "ReqEnc": "",
+            "CodComercio": cod_shop,
             "CodTerminal": cod_terminal,
-            "Req": cfe_data,
-            "RequestDate": fields.Datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-            "TipoMensaje": 300,
         }
 
-        response = requests.post(url, data=json.dumps(payload), headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
 
         if response.status_code == 200:
             raise UserError(response.text)

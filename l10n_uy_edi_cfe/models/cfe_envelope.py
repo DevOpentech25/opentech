@@ -21,6 +21,8 @@ class CfeEnvelope(models.Model):  # class Sobre
     server_code = fields.Char(
         related="servidor_id.server_type_id.name", string="Server Code"
     )
+    uuid_sobre = fields.Char(string="UUID Sobre")
+    invoice_id = fields.Many2one("account.move", string="Factura")
 
     def _compute_server_id(self):
         for record in self:
@@ -94,11 +96,12 @@ class CfeEnvelope(models.Model):  # class Sobre
             return biller.send_einvoice()
 
         elif self.server_code == "uruware":
-            # UruwareDocument = self.env["cfe.uruware.document"].create(
-            #     {("name", "=", 'Uruware Document')}
-            # )
-            api = self.env["cfe.uruware.service"].send_cfe_document(cfe_data=self.documento)
-            raise UserError(api)
+            invoice = self.invoice_id
+            api = self.env["cfe.uruware.service"].send_cfe_document(
+                cfe_xml=self.documento,
+                invoice_id=invoice.id,
+            )
+            raise UserError(f"Server Response Uruware {api}")
 
         else:
             return {}

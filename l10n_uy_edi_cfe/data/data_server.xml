@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <!-- Tipos de Servidores -->
         <record id="server_type_efactura" model="l10n_uy_cfe.server.type">
             <field name="name">efactura</field>
