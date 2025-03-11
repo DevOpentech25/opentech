@@ -3,7 +3,9 @@ import json
 from odoo import models, fields, api
 import base64
 from odoo.exceptions import UserError
-
+import logging
+_logger = logging.getLogger(__name__)
+import uuid
 
 class UCFEService(models.Model):
     _name = "cfe.uruware.service"
@@ -59,6 +61,7 @@ class UCFEService(models.Model):
         #uuid = self.env.company.emission_id_code
         rut_company = self.env.company.vat
         invoice = self.env["account.move"].browse(invoice_id)
+        serie,numero = invoice.get_series_and_number_from_sequence()
 
         # Construcción del JSON
         payload = {
@@ -74,12 +77,13 @@ class UCFEService(models.Model):
                 "EmailEnvioPdfReceptor": invoice.partner_id.email,
                 "FechaReq": fields.Date.today().strftime("%Y-%m-%d"),
                 "HoraReq": fields.Datetime.now().strftime("%H:%M:%S"),
-                "IdReq": invoice.uy_cfe_id.name,
+                "IdReq": "0011223344",# todo calcular
                 "Impresora": "",
-                "NumeroCfe": invoice.uy_cfe_number,
+                "NumeroCfe": numero,
                 "RechCom": "No",
                 "RutEmisor": rut_company,
-                "Serie": invoice.uy_cfe_serie,
+                "RutReceptor": '219999830019', # rut receptor TODO calcular
+                "Serie": serie,
                 "TipoCfe": invoice.uy_document_code,
                 "TipoMensaje": 310,  # Invoke con JSON y xml_data
                 "TipoNotificacion": "",
@@ -87,11 +91,11 @@ class UCFEService(models.Model):
             },
             "RequestDate": fields.Date.today().strftime("%Y-%m-%d"), # "2025-03-09T12:30:00",
             "Tout": 2147483647,
-            "ReqEnc": "",
+            "ReqEnc": "219999830019", # rut receptor TODO calcular
             "CodComercio": cod_shop,
             "CodTerminal": cod_terminal,
         }
-
+        _logger.info(f"Payload ENVIADO: {payload}")
         response = requests.post(url, json=payload, headers=headers)
 
         if response.status_code == 200:
@@ -118,9 +122,8 @@ class UCFEService(models.Model):
             response.text if response.status_code == 200 else {"error": response.text}
         )
 
-
     # WEB Service QUERY
-    def invoke_cfe_service(self):
+    def query_cfe_service(self):
         #"https://test.ucfe.com.uy/Query116_2/WebServicesFE.svc/rest/ConsultaHtmlPorNumero"
         url = get_url_server()+"/ConsultaHtmlPorNumero"
         headers = get_headers()

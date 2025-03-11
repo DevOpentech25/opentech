@@ -11,6 +11,7 @@ class CfeEnvelope(models.Model):  # class Sobre
 
     rut_emisor = fields.Char(string="RUT Emisor")
     numero = fields.Char(string="Número")
+    no_serie = fields.Char(string="Serie")
     fecha = fields.Date(string="Fecha")
     adenda = fields.Text(string="Adenda")
     impresion = fields.Text(string="Impresión")

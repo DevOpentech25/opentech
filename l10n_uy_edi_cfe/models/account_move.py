@@ -5,6 +5,12 @@ from num2words import num2words
 from io import BytesIO
 from base64 import decodebytes, encodebytes
 import uuid
+import logging
+_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
+import re
+
+
 
 try:
     import qrcode
@@ -615,6 +621,32 @@ class AccountMove(models.Model):
             res.update({"close_on_report_download": True})
         self.filtered(lambda inv: not inv.is_move_sent).write({"is_move_sent": True})
         return res
+
+    def get_series_and_number_from_sequence(self):
+        """
+        Obtiene la serie y el número basado en:
+        - La serie será el primer carácter del `code` del diario contable.
+        - El número se obtiene del último número de la secuencia de facturas.
+
+        Retorna:
+            (str, int): Serie (una letra del `code`) y número de la secuencia.
+        """
+        self.ensure_one()  # Asegura que solo se llama en un registro
+
+        # ✅ Obtener la serie asegurando que es una letra válida
+        serie = self.journal_id.code[:1].upper() if self.journal_id.code and self.journal_id.code[0].isalpha() else "A"
+
+        # ✅ Obtener la secuencia correcta
+        last_sequence = self._get_last_sequence()
+
+        # Extraer solo el número de la secuencia (evita errores con formatos tipo "A0000020")
+        if last_sequence:
+            match = re.search(r'(\d+)$', last_sequence)  # Extrae solo el número final
+            numero = int(match.group(1)) if match else 1
+        else:
+            numero = 1  # Si no hay secuencia previa, comienza en 1
+
+        return serie, numero
 
 
 class AccountMoveLine(models.Model):

@@ -1,6 +1,9 @@
 # -*- encoding: utf-8 -*-
 from odoo import api, fields, models, _
 from lxml import etree
+import logging
+_logger = logging.getLogger(__name__)
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class UySendCFE(models.AbstractModel):
@@ -343,10 +346,15 @@ class UySendCFE(models.AbstractModel):
                 vals["rut_emisor"] = vals.pop("rutEmisor")
             if "servidor" in vals:
                 vals.pop("servidor", None)
-            vals["documento"] = self.get_uruware_cfe_xml(batch_id.move_id.id)
-            vals["uuid_sobre"] = batch_id.move_id.uy_uuid # UUID de la factura
-            vals["invoice_id"] = batch_id.move_id.id
 
+            vals["uuid_sobre"] = batch_id.move_id.uy_uuid  # UUID de la factura
+            vals["invoice_id"] = batch_id.move_id.id
+            # vals["impresion"] = documento["referencias"]
+            # vals["adenda"] = documento["adenda"]
+            vals["documento"] = self.get_uruware_cfe_xml(
+                batch_id.move_id.id
+            )
+        _logger.info("VALORES DEL SOBRE: %s", vals)
         # model cfe_envelope.py -> l10n_uy_edi_cfe.envelope.cfe
         Sobre = self.env["l10n_uy_edi_cfe.envelope.cfe"].create(vals)
         res = Sobre.enviarCFE() # llama a la funcion de enviarCFE enviando la factura
@@ -355,43 +363,55 @@ class UySendCFE(models.AbstractModel):
     def get_uruware_cfe_xml(self, account_id):
         # Buscar la factura en Odoo
         invoice = self.env['account.move'].browse(account_id)
+        serie,nro = invoice.get_series_and_number_from_sequence()
         company = self.env.company
 
         if not invoice:
             raise UserError("No se encontró documento para ese ID")
 
-        # Datos generales de la factura
-        tipo_cfe = invoice.uy_document_code,   # "111"  Tipo de CFE (puedes mapear según el tipo de factura)
-        serie = invoice.uy_cfe_serie  # Serie de la factura (puedes definirlo según la configuración)
-        nro = invoice.uy_cfe_number
-        fecha_emision = invoice.invoice_date.strftime("%Y-%m-%d") if invoice.invoice_date else fields.Date.today()
-        fma_pago = "1"  # Puedes mapear según los términos de pago
+        # ✅ Datos generales de la factura
+        tipo_cfe = str(invoice.uy_document_code) if invoice.uy_document_code else "111"
+        fecha_emision = invoice.invoice_date.strftime("%Y-%m-%d") if invoice.invoice_date else fields.Date.today().strftime("%Y-%m-%d")
+        fma_pago = "1" # TODO invoice.uy_payment_method_id.code
 
-        # Datos del Emisor (Tienda)
-        ruc_emisor = company.vat if company.vat else False  # RUC de la tienda
-        rzn_soc = company.name if company.name else "Razon Social"  # Razón social de la tienda
-        cdg_dgi_sucur = company.dgi_code  # Código DGI de la sucursal
-        dom_fiscal = company.street  # Domicilio fiscal de la tienda
-        ciudad = company.city  # Ciudad de la tienda
-        departamento = company.state_id.name  # Departamento de la tienda
+        # ✅ Datos del Emisor
+        ruc_emisor = company.vat
+        if not ruc_emisor:
+            raise UserError("No se ha configurado el RUC del emisor")
 
-        # Datos del Cliente (Receptor)
+        rzn_soc = company.name if company.name else "Razon Social"
+        cdg_dgi_sucur = company.dgi_code if company.dgi_code else "1"
+        dom_fiscal = company.street if company.street else "Domicilio no especificado"
+        ciudad = company.city if company.city else "Montevideo"
+        departamento = company.state_id.name if company.state_id else "Montevideo"
+
+        # ✅ Datos del Cliente
         cliente = invoice.partner_id
-        tipo_doc_recep = "2"  # 2 = RUT (puedes mapearlo según el tipo de cliente)
-        cod_pais_recep = cliente.country_id.code  # Código del país del cliente
-        doc_recep = cliente.vat  # RUT del cliente
-        rzn_soc_recep = cliente.name # razon social del cliente
-        dir_recep = cliente.street
-        ciudad_recep = cliente.city
-        pais_recep = cliente.country_id.name
+        tipo_doc_recep = "2"
+        cod_pais_recep = "UY" # TODO cliente.country_id.code
+        doc_recep = "219999830019" # todo cliente.vat if cliente.vat else "000000000000"
+        rzn_soc_recep = cliente.name if cliente.name else "Cliente Genérico"
+        dir_recep = cliente.street if cliente.street else "Dirección desconocida"
+        ciudad_recep = cliente.city if cliente.city else "Montevideo"
+        pais_recep = cliente.country_id.name if cliente.country_id else "Uruguay"
 
-        # Totales
-        tpo_moneda = invoice.currency_id.name # Moneda de la factura
+        # ✅ Totales
+        tpo_moneda = invoice.currency_id.name if invoice.currency_id else "UYU"
         mnt_neto_iva_tasa_basica = invoice.amount_untaxed
-        iva_tasa_min = invoice.uy_tax_min
-        iva_tasa_basica = invoice.uy_tax_basic_base
-        mnt_iva_tasa_basica = invoice.uy_tax_min_base
-        mnt_total = invoice.amount_total
+
+        # Convertir los valores de manera segura y asegurando 3 decimales
+        iva_tasa_min = Decimal(invoice.uy_tax_min or "10.000").quantize(Decimal("0.000"))
+        iva_tasa_basica = Decimal(invoice.uy_tax_basic_base or "22.000").quantize(Decimal("0.000"))
+        mnt_total = Decimal(invoice.amount_total).quantize(Decimal("0.000"))
+        mnt_iva_tasa_basica = mnt_total * iva_tasa_basica / 100
+
+        # Convertir a cadena con formato exacto de 3 decimales
+        iva_tasa_min_str = f"{iva_tasa_min:.3f}"
+        iva_tasa_basica_str = f"{iva_tasa_basica:.3f}"
+        mnt_iva_tasa_basica_str = f"{mnt_iva_tasa_basica:.3f}"
+
+        mnt_total = Decimal(invoice.amount_total) + mnt_iva_tasa_basica
+
         cant_lin_det = len(invoice.invoice_line_ids)
         mnt_pagar = invoice.amount_total
 
@@ -405,7 +425,7 @@ class UySendCFE(models.AbstractModel):
                 <IndFact>3</IndFact>
                 <NomItem>{line.name}</NomItem>
                 <Cantidad>{line.quantity}</Cantidad>
-                <UniMed>{line.product_uom_id.name if line.product_uom_id else 'Unidad'}</UniMed>
+                <UniMed>{line.product_uom_id.name[:3] if line.product_uom_id and line.product_uom_id.name else 'UN'}</UniMed>
                 <PrecioUnitario>{line.price_unit}</PrecioUnitario>
                 <MontoItem>{line.price_subtotal}</MontoItem>
             </Item>
@@ -444,12 +464,12 @@ class UySendCFE(models.AbstractModel):
                     <Totales>
                         <TpoMoneda>{tpo_moneda}</TpoMoneda>
                         <MntNetoIVATasaBasica>{mnt_neto_iva_tasa_basica:.2f}</MntNetoIVATasaBasica>
-                        <IVATasaMin>{iva_tasa_min}</IVATasaMin>
-                        <IVATasaBasica>{iva_tasa_basica}</IVATasaBasica>
-                        <MntIVATasaBasica>{mnt_iva_tasa_basica:.2f}</MntIVATasaBasica>
+                        <IVATasaMin>{iva_tasa_min_str}</IVATasaMin>
+                        <IVATasaBasica>{iva_tasa_basica_str}</IVATasaBasica>
+                        <MntIVATasaBasica>{mnt_iva_tasa_basica_str}</MntIVATasaBasica>
                         <MntTotal>{mnt_total:.2f}</MntTotal>
                         <CantLinDet>{cant_lin_det}</CantLinDet>
-                        <MntPagar>{mnt_pagar:.2f}</MntPagar>
+                        <MntPagar>{mnt_total:.2f}</MntPagar>
                     </Totales>
                 </Encabezado>
                 <Detalle>
