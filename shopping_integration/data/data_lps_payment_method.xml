@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 🔹 Códigos de Forma de Pago -->
+    <record id="payment_method_cash" model="lps.payment.method">
+        <field name="code">00</field>
+        <field name="name">Contado</field>
+    </record>
+
+    <record id="payment_method_other_credits" model="lps.payment.method">
+        <field name="code">17</field>
+        <field name="name">Otros Créditos (no tarjetas)</field>
+    </record>
+
+    <record id="payment_method_oca" model="lps.payment.method">
+        <field name="code">20</field>
+        <field name="name">OCA Card</field>
+    </record>
+
+    <record id="payment_method_diners" model="lps.payment.method">
+        <field name="code">36</field>
+        <field name="name">Diners</field>
+    </record>
+
+    <record id="payment_method_amex" model="lps.payment.method">
+        <field name="code">37</field>
+        <field name="name">American Express</field>
+    </record>
+
+    <record id="payment_method_visa" model="lps.payment.method">
+        <field name="code">45</field>
+        <field name="name">VISA</field>
+    </record>
+
+    <record id="payment_method_visa_brou" model="lps.payment.method">
+        <field name="code">49</field>
+        <field name="name">VISA BROU SHOPPING (LPS o CUS)</field>
+    </record>
+
+    <record id="payment_method_mastercard" model="lps.payment.method">
+        <field name="code">53</field>
+        <field name="name">Master Card</field>
+    </record>
+
+    <record id="payment_method_cabal" model="lps.payment.method">
+        <field name="code">60</field>
+        <field name="name">Cabal</field>
+    </record>
+
+    <record id="payment_method_cheque_vale" model="lps.payment.method">
+        <field name="code">86</field>
+        <field name="name">Cheque/Vale Las Piedras</field>
+    </record>
+
+    <record id="payment_method_other_credits_card" model="lps.payment.method">
+        <field name="code">90</field>
+        <field name="name">Otros Créditos (en tarjeta)</field>
+    </record>
+
+    <record id="payment_method_debit_card" model="lps.payment.method">
+        <field name="code">91</field>
+        <field name="name">Tarjetas de Débito</field>
+    </record>
+
+    <record id="payment_method_debit_visa" model="lps.payment.method">
+        <field name="code">92</field>
+        <field name="name">Tarjeta de Débito VISA</field>
+    </record>
+
+    <record id="payment_method_debit_master" model="lps.payment.method">
+        <field name="code">93</field>
+        <field name="name">Tarjeta de Débito MASTER</field>
+    </record>
+
+    <record id="payment_method_house_credit" model="lps.payment.method">
+        <field name="code">99</field>
+        <field name="name">Créditos de la Casa</field>
+    </record>
+</odoo>

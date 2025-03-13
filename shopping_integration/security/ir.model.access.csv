@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_point.sales.contract,point.sales.contract,model_point_sales_contract,base.group_user,1,1,1,1
+access_point.sale.tenant,point.sale.tenant,model_point_sale_tenant,base.group_user,1,1,1,1

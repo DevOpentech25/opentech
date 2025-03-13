@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_lps_tenant_form" model="ir.ui.view">
+        <field name="name">lps.tenant.form</field>
+        <field name="model">lps.tenant</field>
+        <field name="arch" type="xml">
+            <form string="Locatario en LPS">
+                <sheet>
+                    <group>
+                        <field name="vat_number" placeholder="Ingrese el RUT"/>
+                        <button name="get_tenant_data" type="object" string="Consultar" class="oe_highlight"/>
+                    </group>
+                    <group>
+                        <field name="shopping_code" readonly="1"/>
+                        <field name="contract_number" readonly="1"/>
+                        <field name="contract_description" readonly="1"/>
+                        <field name="stores" readonly="1"/>
+                        <field name="publication_stage" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_lps_tenant" model="ir.actions.act_window">
+        <field name="name">Locatarios LPS</field>
+        <field name="res_model">lps.tenant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Aquí puedes consultar la información de los locatarios según su número de RUT.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lps_root" name="Las Piedras Shopping"/>
+    <menuitem id="menu_lps_tenant" name="Locatarios" parent="menu_lps_root" action="action_lps_tenant"/>
+</odoo>
+

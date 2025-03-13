@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_lps_sale_declaration_form" model="ir.ui.view">
+        <field name="name">lps.sale.declaration.form</field>
+        <field name="model">lps.sale.declaration</field>
+        <field name="arch" type="xml">
+            <form string="Declaración de Ventas en LPS">
+                <sheet>
+                    <group>
+                        <field name="vat_number" placeholder="Ingrese el RUT"/>
+                        <field name="shopping_code" placeholder="Código Shopping"/>
+                        <field name="contract_number" placeholder="Número de Contrato"/>
+                        <button name="send_sale_declaration" type="object" string="Enviar Declaración" class="oe_highlight"/>
+                    </group>
+                    <group>
+                        <field name="channel_code"/>
+                        <field name="sequential"/>
+                        <field name="cash_register"/>
+                        <field name="customer_name"/>
+                        <field name="phone_number"/>
+                        <field name="cfe_code"/>
+                        <field name="cfe_number"/>
+                        <field name="cfe_series"/>
+                        <field name="cfe_currency"/>
+                        <field name="cfe_issue_date"/>
+                    </group>
+                    <group>
+                        <field name="total_mociva"/>
+                        <field name="total_msiva"/>
+                        <field name="payment_method_1"/>
+                        <field name="total_1"/>
+                        <field name="payment_method_2"/>
+                        <field name="total_2"/>
+                        <field name="payment_method_3"/>
+                        <field name="total_3"/>
+                        <field name="status" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_lps_sale_declaration" name="Declaración de Ventas" parent="menu_lps_root" action="action_lps_sale_declaration"/>
+</odoo>

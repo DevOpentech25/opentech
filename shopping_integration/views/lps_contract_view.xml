@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_lps_contract_form" model="ir.ui.view">
+        <field name="name">lps.contract.form</field>
+        <field name="model">lps.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contrato en LPS">
+                <sheet>
+                    <group>
+                        <field name="vat_number" placeholder="Ingrese el RUT"/>
+                        <field name="shopping_code" placeholder="Código Shopping"/>
+                        <field name="contract_number" placeholder="Número de Contrato"/>
+                        <button name="get_contract_data" type="object" string="Consultar" class="oe_highlight"/>
+                    </group>
+                    <group>
+                        <field name="company_name" readonly="1"/>
+                        <field name="contract_description" readonly="1"/>
+                        <field name="stores" readonly="1"/>
+                        <field name="credit_limit" readonly="1"/>
+                        <field name="debit_limit" readonly="1"/>
+                        <field name="stage" readonly="1"/>
+                        <field name="category_code" readonly="1"/>
+                        <field name="category_name" readonly="1"/>
+                        <field name="channel_code" readonly="1"/>
+                        <field name="channel_name" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_lps_contract" model="ir.actions.act_window">
+        <field name="name">Contratos LPS</field>
+        <field name="res_model">lps.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Aquí puedes consultar la información de los contratos según el número de RUT, código de shopping y número de contrato.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lps_contract" name="Contratos" parent="menu_lps_root" action="action_lps_contract"/>
+</odoo>
